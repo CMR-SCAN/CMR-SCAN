@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CMR Scanner App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .container {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        h1, h2 {
+            color: #2c3e50;
+        }
+        .step {
+            display: none;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
+        .active-step {
+            display: block;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-top: 15px;
+            color: #34495e;
+        }
+        input[type="text"], input[type="number"], input[type="date"], input[type="file"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 500px;
+        }
+        th {
+            background-color: #ecf0f1;
+            border: 1px solid #bdc3c7;
+            padding: 8px 5px;
+            font-size: 11px;
+            text-align: center;
+            color: #2c3e50;
+        }
+        td {
+            border: 1px solid #bdc3c7;
+            padding: 0;
+        }
+        td input[type="number"] {
+            width: 100%;
+            padding: 8px 5px;
+            margin: 0;
+            border: none;
+            border-radius: 0;
+            text-align: center;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            font-weight: bold;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        button:disabled {
+            background-color: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .error-msg {
+            color: #e74c3c;
+            display: none;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>CMR Document Scanner</h1>
+
+        <form id="cmr-form">
+            
+            <div id="step1" class="step active-step">
+                <h2>Stap 1: Upload CMR Foto</h2>
+                <p>Selecteer de foto van het CMR document om mee te sturen.</p>
+                <input type="file" id="cmrPhoto" name="foto" accept="image/*" data-fs-field>
+                <button type="button" onclick="goToManualInput()">Document Toevoegen & Invullen</button>
+            </div>
+
+            <div id="step23" class="step">
+                <h2>Stap 2: Vul de gegevens in</h2>
+                
+                <label>Vertreklocatie (Van):</label>
+                <input type="text" id="locatieVan" name="vertreklocatie" placeholder="Bv. Amsterdam" data-fs-field>
+                
+                <label>Aankomstlocatie (Naar):</label>
+                <input type="text" id="locatieNaar" name="aankomstlocatie" placeholder="Bv. Naaldwijk" data-fs-field>
+                
+                <label>Hoofdvervoerder:</label>
+                <input type="text" id="hoofdvervoerder" name="hoofdvervoerder" data-fs-field>
+
+                <label>Ondervervoerder:</label>
+                <input type="text" id="ondervervoerder" name="ondervervoerder" placeholder="Optioneel" data-fs-field>
+
+                <label>Klant:</label>
+                <input type="text" id="klant" name="klant" data-fs-field>
+                
+                <label>Datum gereden:</label>
+                <input type="date" id="datum" name="datum_gereden" data-fs-field>
+
+                <label>Emballage overzicht:</label>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>TAG6</th><th>CC</th><th>DC</th><th>PLATEN</th><th>VSTK</th><th>FLORIS</th><th>FHKAR</th><th>EURO</th><th>WWP</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="number" name="emb_cmr" id="aantal_cmr"></td>
+                                <td><input type="number" name="emb_cc" id="aantal_cc"></td>
+                                <td><input type="number" name="emb_dc" id="aantal_dc"></td>
+                                <td><input type="number" name="emb_platen" id="aantal_platen"></td>
+                                <td><input type="number" name="emb_vstk" id="aantal_vstk"></td>
+                                <td><input type="number" name="emb_floris" id="aantal_floris"></td>
+                                <td><input type="number" name="emb_fhkar" id="aantal_fhkar"></td>
+                                <td><input type="number" name="emb_euro" id="aantal_euro"></td>
+                                <td><input type="number" name="emb_wwp" id="aantal_wwp"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <hr style="margin: 30px 0 20px 0; border: 1px solid #eee;">
+
+                <label style="color: #27ae60; font-size: 1.1em;">Prijs van dit transport (€):</label>
+                <input type="number" id="prijs" name="prijs" placeholder="0.00" step="0.01" data-fs-field>
+
+                <p id="form-error" class="error-msg">Oeps! Er ging iets mis bij het verzenden.</p>
+                <button type="submit" id="submit-btn" data-fs-submit-btn style="background-color: #27ae60;">Bevestig en Mail naar Administratie</button>
+            </div>
+        </form>
+
+        <div id="step4" class="step">
+            <h2>Stap 4: Verzonden!</h2>
+            <p>De gegevens en de foto zijn succesvol verzonden.</p>
+            <button onclick="resetApp()">Nieuwe invoer</button>
+        </div>
+    </div>
+
+    <script>
+        window.formspree = window.formspree || function () { (formspree.q = formspree.q || []).push(arguments); };
+        formspree('initForm', { 
+            formElement: '#cmr-form', 
+            formId: 'xwvaqgek',
+            onSuccess: function() {
+                document.getElementById('step23').classList.remove('active-step');
+                document.getElementById('step4').classList.add('active-step');
+            },
+            onError: function() {
+                document.getElementById('form-error').style.display = 'block';
+            }
+        });
+    </script>
+    <script src="https://unpkg.com/@formspree/ajax@1" defer></script>
+
+    <script>
+        // Functie om naar de handmatige invoer te gaan
+        function goToManualInput() {
+            var fileInput = document.getElementById('cmrPhoto');
+            if (fileInput.files.length === 0) {
+                alert("Upload a.u.b. eerst een foto van het document.");
+                return;
+            }
+
+            // Stel de datum van vandaag alvast in voor het gemak
+            var vandaag = new Date().toISOString().split('T')[0];
+            document.getElementById('datum').value = vandaag;
+
+            // Wissel van scherm
+            document.getElementById('step1').classList.remove('active-step');
+            document.getElementById('step23').classList.add('active-step');
+        }
+
+        function resetApp() {
+            document.getElementById('cmr-form').reset();
+            document.getElementById('form-error').style.display = 'none';
+            document.getElementById('step4').classList.remove('active-step');
+            document.getElementById('step1').classList.add('active-step');
+        }
+
+    </script>
+
+</body>
+</html>
